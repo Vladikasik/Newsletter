@@ -4,5 +4,7 @@ from django.db import models
 class User(models.Model):
 
     user_name = models.CharField("Имя", max_length=50)
-    user_tlg = models.CharField("Имя", max_length=30)
-    expiration_date = models.DateField()
+    user_tlg = models.CharField("Ник в телеграм", max_length=30)
+    expiration_date = models.DateField("Дата окончания срока подписки")
+    user_promocode = models.CharField(
+        "Промокод пользователя на подписку", max_length=10)
