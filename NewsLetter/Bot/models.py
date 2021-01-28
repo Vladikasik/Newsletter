@@ -8,3 +8,8 @@ class User(models.Model):
     expiration_date = models.DateField("Дата окончания срока подписки")
     user_promocode = models.CharField(
         "Промокод пользователя на подписку", max_length=10)
+
+class Bot_message(models.Model):
+
+    message_name = models.CharField("Название сообщение", max_length=20)
+    message_text = models.TextField("Текст сообщения")

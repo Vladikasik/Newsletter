@@ -14,7 +14,7 @@ class Parser:
     # wrtiting recieved dict to db
     def write_all_articles(self):
 
-    	# receiving all new articles from parser
+        # receiving all new articles from parser
         all_new_articles_received = self._parse_all_new(self)
 
         # writing them in db by django.models
