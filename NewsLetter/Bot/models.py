@@ -13,3 +13,6 @@ class Bot_message(models.Model):
 
     message_name = models.CharField("Название сообщение", max_length=20)
     message_text = models.TextField("Текст сообщения")
+
+    def __str__(self):
+        return self.message_name
