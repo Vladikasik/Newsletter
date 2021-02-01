@@ -36,5 +36,30 @@ class Head:
             new_db_insert.save()
 
     # beincrypto.ru
-    def _be_in_crypto(self)
-        pass
+    def _be_in_crypto(self):
+        req = requests.get(self.be_in_crypto_link)
+        soup = BeautifulSoup(req.text, 'html.parser')
+
+        all_states = soup.findAll('article', 
+            {"class": "multi-news-card bb-1 d-lg-flex flex-lg-column mb-5"})
+        for i in all_states:
+            print(self._be_in_crypto_article(i))
+
+    # parsing all info for each article
+    def _be_in_crypto_article(self, article):
+        article_title = article.find('h3').find('a').text
+
+        to_return = {'title': article_title}
+
+        return to_return
+
+    # getting list of all articles to see if new were written
+    def _get_articles(self, link):
+        to_return = Article.object.filter(
+            article_link_to_original_website=link)
+        return to_return
+
+
+if __name__ == "__main__":
+    parser = Head()
+    parser._be_in_crypto()
