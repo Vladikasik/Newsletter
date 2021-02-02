@@ -8,4 +8,7 @@ class Article(models.Model):
     article_link_to_origina_article = models.URLField(
         "Ссылка оригинала статьи, или на наш сайт.")
     article_link_to_original_website = models.URLField(
-    	"Ссылка на сайт с которого был произведен парсинг")
+        "Ссылка на сайт с которого был произведен парсинг")
+
+    def __str__(self):
+        return self.article_title
