@@ -45,23 +45,44 @@ class Head:
             {"class": "multi-news-card bb-1 d-lg-flex flex-lg-column mb-5"})
         new_parsed = []
         for i in all_states:
-            article = self._be_in_crypto_article(i)
-            if article['title'] not in self._get_articles(self.be_in_crypto_link):
-                new_parsed.append(article)
-        # print(new_parsed)
+            article = self._be_in_crypto_info(i)
+            break
+            # if article['title'] not in self._get_articles(self.be_in_crypto_link):
+            #     new_parsed.append(article)
 
     # parsing all info for each article
 
-    def _be_in_crypto_article(self, article):
+    def _be_in_crypto_info(self, article):
+        #
+        #
+        def parse_article_content(link):
+            try:
+                req = requests.get(link)
+                soup = BeautifulSoup(req.text, "html.parser")
+                main_div = soup.find('div', {"class": "entry-content-inner"})
+                pre_div = main_div.find(
+                    'div', {"class": "intro-text"})
+                main_div = str(main_div)[len(str(pre_div)):-1]
+                pre_text = pre_div.findAll('p')[1].text
+                pre_text = f'<strong>"{pre_text}"</strong>'
+                print(main_div)
+            except Exception as ex:
+                print(ex)
+                time.sleep(3)
+                return parse_article_content(link)
+        #
+        #
         article_title = article.find('h3').find('a').text
         article_image_link = article.find('amp-img')['src']
         article_image = f"<img src='{article_image_link}'></img>"
         article_link = article.find('a')['href']
+        parse_article_content(article_link)
+
         print(article_link)
         print()
         print()
 
-        to_return = {'title': article_title}
+        to_return = {'title': article_title, 'original_link': article_link}
 
         return to_return
 
