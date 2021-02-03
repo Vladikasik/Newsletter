@@ -3,6 +3,7 @@ import django
 import requests
 from bs4 import BeautifulSoup
 import time
+import telegraph
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "NewsLetter.settings")
 django.setup()
@@ -34,6 +35,11 @@ class Head:
                 article_text=article_from_query["text"]
             )
             new_db_insert.save()
+    
+    # making article in telegraph
+    def telegraph_link(self):
+        pass
+        
 
     # beincrypto.ru
     def _be_in_crypto(self):
@@ -62,9 +68,13 @@ class Head:
                 main_div = soup.find('div', {"class": "entry-content-inner"})
                 pre_div = main_div.find(
                     'div', {"class": "intro-text"})
-                main_div = str(main_div)[len(str(pre_div)):-1]
+                main_div = str(main_div)[len(str(pre_div))+34:-1]
                 pre_text = pre_div.findAll('p')[1].text
                 pre_text = f'<strong>"{pre_text}"</strong>'
+                main_div = main_div.replace('<div', '<p hidden').replace('</div>', '</p>')
+                main_div = main_div.replace('<amp-ad', '<p hidden')
+                main_div = main_div.replace('<amp-img', '<p').replace('</amp-img>', '</p>')
+                main_div = main_div.replace('<h2', '<h3').replace('</h2>', '</h3>')
                 print(main_div)
             except Exception as ex:
                 print(ex)
