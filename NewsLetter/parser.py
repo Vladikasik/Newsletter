@@ -52,7 +52,7 @@ class Head:
         new_parsed = []
         for i in all_states:
             article = self._be_in_crypto_info(i)
-            break
+            print(article['telegraph'])
             # if article['title'] not in self._get_articles(self.be_in_crypto_link):
             #     new_parsed.append(article)
 
@@ -65,25 +65,35 @@ class Head:
             try:
                 req = requests.get(link)
                 soup = BeautifulSoup(req.text, "html.parser")
+
+                # getting ready state to parse
                 main_div = soup.find('div', {"class": "entry-content-inner"})
                 pre_div = main_div.find(
                     'div', {"class": "intro-text"})
                 pre_text = pre_div.findAll('p')[1].text
+                pre_len = len(str(pre_div.findAll('p')[1]))
                 pre_text = f'<strong>"{pre_text}"</strong>'
                 exit_text = ''
+
+                # parsing and translating to telegraph tags
                 for i in main_div.findAll({'p': True, 'h2': True, 'figure': True, 'blockquote': True}):
                     if i.name == 'p':
                         if i.find('amp-ad'):
-                            print('add found')
+                            pass
                         else:
                             exit_text += str(i) + '\n'
                     elif i.name == 'h2':
                         exit_text += f"<h3>{i.text}</h3>\n"
                     elif i.name == 'figure':
-                        exit_text += "<h3>Картинка)</h3>\n"
+                        img = i.find('amp-img')
+                        img = f"<img src='{img['src']}'></img>"
+                        exit_text += str(img) + '\n'
                     elif i.name == 'blockquote':
                         exit_text += str(i) + '\n'
-                print(exit_text)
+
+                exit_text = pre_text + '\n' +\
+                    exit_text[pre_len + 8:]  # cutting pre-text
+                return exit_text
             except Exception as ex:
                 print(ex)
                 time.sleep(3)
@@ -94,15 +104,15 @@ class Head:
         article_image_link = article.find('amp-img')['src']
         article_image = f"<img src='{article_image_link}'></img>"
         article_link = article.find('a')['href']
-        parse_article_content(
-            'https://beincrypto.ru/v-chikago-snimut-film-o-protivostoyanii-kriptovalyut-i-mira-uoll-strit/')
-
-        print(article_link)
-        print()
-        print()
-
-        to_return = {'title': article_title, 'original_link': article_link}
-
+        main_text = parse_article_content(article_link)
+        result_article_html = article_image + main_text
+        telegraph_link = self._write_state(article_title, result_article_html)
+        to_return = {'title': article_title,
+                     'html_text': result_article_html,
+                     'telegraph': telegraph_link,
+                     'original_link': article_link,
+                     'original_website': self.be_in_crypto_link}
+        print(to_return)
         return to_return
 
     # getting list of all articles to see if new were written
@@ -112,7 +122,22 @@ class Head:
         # to_return = to_return.article_title.all()
         return to_return
 
+    # write telegraph and get link
+    def _write_state(self, title, text_state):
+        from telegraph import Telegraph
+
+        telegraph = Telegraph()
+
+        telegraph.create_account(short_name='1337')
+
+        response = telegraph.create_page(
+            str(title),
+            html_content=str(text_state)
+        )
+
+        return 'https://telegra.ph/{}'.format(response['path'])
+
 
 if __name__ == "__main__":
     parser = Head()
-    parser._be_in_crypto()
+    print(parser._be_in_crypto())
