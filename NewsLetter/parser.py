@@ -68,26 +68,22 @@ class Head:
                 main_div = soup.find('div', {"class": "entry-content-inner"})
                 pre_div = main_div.find(
                     'div', {"class": "intro-text"})
-                main_div = str(main_div)[len(str(pre_div)) + 34:-7]
                 pre_text = pre_div.findAll('p')[1].text
                 pre_text = f'<strong>"{pre_text}"</strong>'
-                main_div = main.div.replace('<div class="amp-ad-wrapper  text-center amp_ad_1 ampforwp-incontent-custom-banner ampforwp-incontent-ad1"><p><!-- AMP Inside article #2 300x250 [amp] --><br><amp-ad width="300" height="250" type="adbutler" data-account="177750" data-zone="460554" class="i-amphtml-layout-fixed i-amphtml-layout-size-defined i-amphtml-element i-amphtml-notbuilt amp-notbuilt amp-unresolved i-amphtml-unresolved" style="width:300px;height:250px;" i-amphtml-layout="fixed"><br></amp-ad></p></div>', '')
-                main_div = main_div.replace(
-                    '<div', '<p hidden').replace('</div>', '</p>')
-                main_div = main_div.replace(
-                    '<amp-ad', '<p hidden').replace('</amp-ad>', '</p>')
-                main_div = main_div.replace(
-                    '<amp-img', '<p').replace('</amp-img>', '</p>')
-                main_div = main_div.replace(
-                    '<h2', '<h3').replace('</h2>', '</h3>')
-                main_div = main_div.replace(
-                    '<i-amphtml-sizer', '<p hidden').replace('</i-amphtml-sizer>', '</p>')
-                main_div = main_div.replace(
-                    '<noscript>', '<p hidden').replace('</noscript>', '</p>')
-                main_div = main_div.replace(
-                    '<figure', '<p hidden').replace('</figure>', '</p>')
-                main_div = main_div.replace('<p><strong><a href="https://beincrypto.ru/beincrypto_ru.htm">Присоединяйтесь</a> к нашему телеграм-каналу, чтобы быть в курсе главных трендов крипторынка.</strong></p>', '')
-                print(main_div)
+                exit_text = ''
+                for i in main_div.findAll({'p': True, 'h2': True, 'figure': True, 'blockquote': True}):
+                    if i.name == 'p':
+                        if i.find('amp-ad'):
+                            print('add found')
+                        else:
+                            exit_text += str(i) + '\n'
+                    elif i.name == 'h2':
+                        exit_text += f"<h3>{i.text}</h3>\n"
+                    elif i.name == 'figure':
+                        exit_text += "<h3>Картинка)</h3>\n"
+                    elif i.name == 'blockquote':
+                        exit_text += str(i) + '\n'
+                print(exit_text)
             except Exception as ex:
                 print(ex)
                 time.sleep(3)
@@ -98,7 +94,8 @@ class Head:
         article_image_link = article.find('amp-img')['src']
         article_image = f"<img src='{article_image_link}'></img>"
         article_link = article.find('a')['href']
-        parse_article_content(article_link)
+        parse_article_content(
+            'https://beincrypto.ru/v-chikago-snimut-film-o-protivostoyanii-kriptovalyut-i-mira-uoll-strit/')
 
         print(article_link)
         print()
