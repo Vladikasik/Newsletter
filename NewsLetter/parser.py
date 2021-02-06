@@ -3,7 +3,6 @@ import django
 import requests
 from bs4 import BeautifulSoup
 import time
-import telegraph
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "NewsLetter.settings")
 django.setup()
@@ -20,29 +19,31 @@ class Head:
     # parsing all articles and returning dict of them
     # to update them in db later
     def _parse_all_new(self):
-        return []
+        return self._be_in_crypto()
 
     # wrtiting recieved dict to db
     def write_all_articles(self):
 
         # receiving all new articles from parser
-        all_new_articles_received = self._parse_all_new(self)
+        all_new_articles_received = self._parse_all_new()
 
         # writing them in db by django.models
         for article_from_query in all_new_articles_received:
-            new_db_insert = Article(
-                article_title=article_from_query["title"],
-                article_text=article_from_query["text"]
-            )
-            new_db_insert.save()
+            if article_from_query["telegraph"] is not None:
+                new_db_insert = Article(
+                    article_title=article_from_query["title"],
+                    article_text=article_from_query["html_text"],
+                    article_link_telegraph=article_from_query["telegraph"],
+                    article_link_to_origina_article=article_from_query["original_link"],
+                    article_link_to_original_website=article_from_query["original_website"]
 
-    # making article in telegraph
-    def telegraph_link(self):
-        pass
+                )
+                new_db_insert.save()
 
     # beincrypto.ru
 
     def _be_in_crypto(self):
+        print('starting be on crypto')
         req = requests.get(self.be_in_crypto_link)
         soup = BeautifulSoup(req.text, 'html.parser')
 
@@ -52,9 +53,13 @@ class Head:
         new_parsed = []
         for i in all_states:
             article = self._be_in_crypto_info(i)
-            print(article['telegraph'])
-            # if article['title'] not in self._get_articles(self.be_in_crypto_link):
-            #     new_parsed.append(article)
+            try:
+                print(article['telegraph'])
+                if article['title'] not in self._get_articles(self.be_in_crypto_link):
+                    new_parsed.append(article)
+            except:
+                pass
+        return new_parsed
 
     # parsing all info for each article
 
@@ -62,6 +67,7 @@ class Head:
         #
         #
         def parse_article_content(link):
+
             try:
                 req = requests.get(link)
                 soup = BeautifulSoup(req.text, "html.parser")
@@ -81,21 +87,30 @@ class Head:
                         if i.find('amp-ad'):
                             pass
                         else:
-                            exit_text += str(i) + '\n'
+                            if i.find('span'):
+                                text = i.find('a').text
+                                exit_text += text
+                            else:
+                                try:
+                                    i['dir']
+                                except:
+                                    exit_text += str(i) + '\n'
                     elif i.name == 'h2':
                         exit_text += f"<h3>{i.text}</h3>\n"
                     elif i.name == 'figure':
                         img = i.find('amp-img')
-                        img = f"<img src='{img['src']}'></img>"
-                        exit_text += str(img) + '\n'
-                    elif i.name == 'blockquote':
+                        if img:
+                            img = f"<img src='{img['src']}'></img>"
+                            exit_text += str(img) + '\n'
+                    elif i.name == 'blockquote' and i.get('class') == 'wp-block-quote':
                         exit_text += str(i) + '\n'
 
-                exit_text = pre_text + '\n' +\
+                exit_text = pre_text + '\n<br>' +\
                     exit_text[pre_len + 8:]  # cutting pre-text
                 return exit_text
             except Exception as ex:
-                print(ex)
+                print('exeption in parse_article_content()')
+                print(repr(ex))
                 time.sleep(3)
                 return parse_article_content(link)
         #
@@ -112,7 +127,6 @@ class Head:
                      'telegraph': telegraph_link,
                      'original_link': article_link,
                      'original_website': self.be_in_crypto_link}
-        print(to_return)
         return to_return
 
     # getting list of all articles to see if new were written
@@ -130,14 +144,19 @@ class Head:
 
         telegraph.create_account(short_name='1337')
 
-        response = telegraph.create_page(
-            str(title),
-            html_content=str(text_state)
-        )
-
-        return 'https://telegra.ph/{}'.format(response['path'])
+        try:
+            response = telegraph.create_page(
+                str(title),
+                html_content=str(text_state)
+            )
+            return 'https://telegra.ph/{}'.format(response['path'])
+        except:
+            print('error in telegreaph creating')
 
 
 if __name__ == "__main__":
     parser = Head()
-    print(parser._be_in_crypto())
+    while True:
+        parser.write_all_articles()
+        print('waiting 10 min')
+        time.sleep(600)
