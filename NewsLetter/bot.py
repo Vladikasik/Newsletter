@@ -28,7 +28,13 @@ class Bot:
         @self.bot.message_handler(commands=['code'])
         def main_commands(msg):
 
-            self.bot.send_message(msg.chat.id, self._gm(msg))
+            def check_promo(msg, user_id):
+                print(msg.text, user_id)
+
+            message_choose = self.bot.send_message(
+                msg.chat.id, 'Отправьте ваш промокод')
+            self.bot.register_next_step_handler(
+                message_choose, check_promo, msg.from_user.id)
 
         self.bot.polling()
 
