@@ -20,7 +20,12 @@ class Bot:
 
     def mainloop(self):
 
-        @self.bot.message_handler(commands=['start'])
+        @self.bot.message_handler(commands=['start', 'preferences', 'help'])
+        def main_commands(msg):
+
+            self.bot.send_message(msg.chat.id, self._gm(msg))
+
+        @self.bot.message_handler(commands=['code'])
         def main_commands(msg):
 
             self.bot.send_message(msg.chat.id, self._gm(msg))

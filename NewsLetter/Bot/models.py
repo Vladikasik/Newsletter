@@ -16,3 +16,8 @@ class Bot_message(models.Model):
 
     def __str__(self):
         return self.message_name
+
+class Code(models.Model):
+
+    code = models.IntegerField('Промокод пользователя на подписку')
+    promo_duration = models.TimeField('Время промокода')
