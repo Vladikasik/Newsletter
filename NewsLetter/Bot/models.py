@@ -4,10 +4,11 @@ from django.db import models
 class User(models.Model):
 
     user_name = models.CharField("Имя", max_length=50)
-    user_tlg = models.CharField("Ник в телеграм", max_length=30)
+    user_id_tlg = models.CharField("Ник в телеграм", max_length=30)
     expiration_date = models.DateField("Дата окончания срока подписки")
-    user_promocode = models.CharField(
-        "Промокод пользователя на подписку", max_length=10)
+
+    def __str__(self):
+        return self.user_name
 
 class Bot_message(models.Model):
 
@@ -20,4 +21,7 @@ class Bot_message(models.Model):
 class Code(models.Model):
 
     code = models.IntegerField('Промокод пользователя на подписку')
-    promo_duration = models.TimeField('Время промокода')
+    promo_duration = models.DateField('Время промокода')
+
+    def __str__(self):
+        return str(self.code)
