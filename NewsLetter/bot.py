@@ -1,12 +1,13 @@
 import os
 import django
 import telebot
+import datetime
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "NewsLetter.settings")
 django.setup()
 
 from Bot.models import Bot_message, Code, User
-
+from Parser.models import Article
 
 class Bot:
 
@@ -44,6 +45,7 @@ class Bot:
                                         user_id_tlg=user_id,
                                         expiration_date=promo.promo_duration)
                         new_user.save()
+                        promo.delete()
                 else:
                     answer = self._gm('wrong_code')
                     self.bot.send_message(msg.chat.id, answer)
@@ -78,7 +80,19 @@ class Bot:
         except:
             return None
 
+    def mailing_to_all(self):
+        articles = Article.objects.filter(is_sent=False)
+        now_date = datetime.datetime.now()
+        all_active_user = User.objects.all()
+        for article in articles:
+            for user in all_active_user:
+                if user.expiration_date >= now_date.date():
+                    to_send = f"{article.article_title}\n{article.article_link_telegraph}"
+                    self.bot.send_message(user.user_id_tlg, to_send)
+                    article.is_sent = True
+                    article.save()
+
 
 if __name__ == "__main__":
     bot = Bot()
-    bot.mainloop()
+    bot.mailing_to_all()
