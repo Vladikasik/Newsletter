@@ -95,4 +95,4 @@ class Bot:
 
 if __name__ == "__main__":
     bot = Bot()
-    bot.mailing_to_all()
+    bot.mainloop()
