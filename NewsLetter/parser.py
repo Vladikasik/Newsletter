@@ -3,6 +3,7 @@ import django
 import requests
 from bs4 import BeautifulSoup
 import time
+import bot
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "NewsLetter.settings")
 django.setup()
@@ -162,4 +163,6 @@ if __name__ == "__main__":
     while True:
         parser.write_all_articles()
         print('waiting 10 min')
+        bot = Bot()
+        bot.mailing_to_all()
         time.sleep(600)
