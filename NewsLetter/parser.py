@@ -88,7 +88,10 @@ class Head:
                             pass
                         else:
                             if i.find('span'):
-                                text = i.find('a').text
+                                try:
+                                    text = i.find('a').text
+                                except:
+                                    text = 'Error'
                                 exit_text += text
                             else:
                                 try:
