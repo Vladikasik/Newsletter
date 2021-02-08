@@ -3,7 +3,7 @@ import django
 import requests
 from bs4 import BeautifulSoup
 import time
-import bot
+from bot import Bot
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "NewsLetter.settings")
 django.setup()
