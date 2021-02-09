@@ -15,7 +15,7 @@ class Bot:
 
         bot_token = "1550008254:AAGwdmlxuB2GnMnxnE79HD1DBmW_z6vh8iM"
 
-        bot_token = "1409431136:AAGiPb991cejge3vxLt9PkX4-2QTGsvvc_o"
+        # bot_token = "1409431136:AAGiPb991cejge3vxLt9PkX4-2QTGsvvc_o" # my bot
 
         self.bot = telebot.TeleBot(bot_token)
 
