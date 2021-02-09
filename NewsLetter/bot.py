@@ -15,6 +15,8 @@ class Bot:
 
         bot_token = "1550008254:AAGwdmlxuB2GnMnxnE79HD1DBmW_z6vh8iM"
 
+        bot_token = "1409431136:AAGiPb991cejge3vxLt9PkX4-2QTGsvvc_o"
+
         self.bot = telebot.TeleBot(bot_token)
 
     def mainloop(self):
@@ -87,8 +89,9 @@ class Bot:
         for article in articles:
             for user in all_active_user:
                 if user.expiration_date >= now_date.date():
-                    to_send = f"{article.article_title}\n{article.article_link_telegraph}"
-                    self.bot.send_message(user.user_id_tlg, to_send)
+                    to_send = f"*{article.article_title}*\n[Читать]({article.article_link_to_origina_article})"
+                    self.bot.send_message(
+                        user.user_id_tlg, to_send, parse_mode='Markdown')
                     article.is_sent = True
                     article.save()
 
