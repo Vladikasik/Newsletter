@@ -41,7 +41,10 @@ class Bot:
                             "подписки существующем пользователям, пожалуйста напиши "
                             "tlg-@vladislav_ain если у вас возникли проблемы")
                     else:
-                        user_name = msg.from_user.first_name + ' ' + msg.from_user.last_name
+                        try:
+                            user_name = msg.from_user.first_name + ' ' + msg.from_user.last_name
+                        except:
+                            user_name = "NOT FILLED"
                         user_id = msg.from_user.id
                         new_user = User(user_name=user_name,
                                         user_id_tlg=user_id,
