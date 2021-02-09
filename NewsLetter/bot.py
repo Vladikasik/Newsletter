@@ -51,6 +51,8 @@ class Bot:
                                         expiration_date=promo.promo_duration)
                         new_user.save()
                         promo.delete()
+                        self.bot.send_message(
+                            msg.chat.id, "Вы успешно подписались на бота, наши поздравления. Теперь ждите новостей))")
                 else:
                     answer = self._gm('wrong_code')
                     self.bot.send_message(msg.chat.id, answer)
